@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package codeRunner;
+
+option go_package = "codeRunnerV1";
+
+service CodeRunner {
+  rpc RunTestsOnCode(RunTestsOnCodeRequest) returns (RunTestsOnCodeResponse);
+}
+
+message Test {
+  string input = 1;
+  string output = 2;
+  int32 points = 3;
+}
+
+message RunTestsOnCodeRequest {
+  string code = 1;
+  string language = 2;
+  int32 memoryLimitInKb = 3;
+  int32 timeLimitInMs = 4;
+  repeated Test tests = 5;
+}
+
+message RunTestsOnCodeResponse {
+  int32 launch_id = 1;
+}
