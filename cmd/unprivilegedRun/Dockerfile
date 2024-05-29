@@ -14,4 +14,15 @@ COPY --from=builder /app/bin/unprivrun /home/
 
 WORKDIR /home
 
-RUN mkdir /home/jail
+RUN mkdir /home/jail && \
+    cp -a /bin /etc /lib /sbin /usr /home/jail
+
+
+RUN chroot jail adduser -h / -D unprivuser && \
+    chroot jail chown -R root:root / && \
+    chroot jail chmod 755 /
+
+
+
+
+

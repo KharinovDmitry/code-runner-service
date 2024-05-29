@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -27,14 +28,7 @@ func main() {
 
 	ctx, closeCtx := context.WithTimeout(ctx, time.Duration(timeout)*time.Millisecond)
 	defer closeCtx()
-
-	args := []string{"jail"}
-	for _, arg := range os.Args[3:] {
-		args = append(args, arg)
-	}
-
-	cmd := exec.CommandContext(ctx, "chroot", args...)
-	cmd.SysProcAttr = &syscall.SysProcAttr{}
+	cmd := exec.CommandContext(ctx, "chroot", "jail", "su", "-", "unprivuser")
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -43,12 +37,23 @@ func main() {
 	}
 	defer stdin.Close()
 
+	fmt.Fprintln(stdin, strings.Join(os.Args[3:], " "))
+
 	var input string
 	fmt.Fscan(os.Stdin, &input)
 	fmt.Fprintln(stdin, input)
 
 	outputBytes, err := cmd.CombinedOutput()
 	outputString := string(outputBytes)
+
+	/*
+		ctx, closeCtx := context.WithTimeout(ctx, time.Duration(timeout)*time.Millisecond)
+		defer closeCtx()
+
+		cmd := exec.CommandContext(ctx, os.Args[3], os.Args[4:]...)
+		cmd.SysProcAttr = &syscall.SysProcAttr{}
+
+	*/
 
 	if err != nil && errors.Is(err, context.DeadlineExceeded) {
 		fmt.Println("TIME LIMIT")

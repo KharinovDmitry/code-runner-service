@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package codeRunner;
 
-option go_package = "codeRunnerV1";
+option go_package = "kforge.codeRunner.v1;codeRunnerV1";
 
 service CodeRunner {
   rpc RunTestsOnCode(RunTestsOnCodeRequest) returns (RunTestsOnCodeResponse);
@@ -17,11 +17,13 @@ message Test {
 message RunTestsOnCodeRequest {
   string code = 1;
   string language = 2;
-  int32 memoryLimitInKb = 3;
-  int32 timeLimitInMs = 4;
+  int32 memoryLimitKb = 3;
+  int32 timeLimitMs = 4;
   repeated Test tests = 5;
 }
 
 message RunTestsOnCodeResponse {
-  int32 launch_id = 1;
+  string resultCode = 1;
+  int32 points = 2;
+  string description = 3;
 }
