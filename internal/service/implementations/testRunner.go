@@ -22,7 +22,7 @@ func NewTestRunnerService(codeRunnerFactory service.ExecutorFactory) *TestRunner
 }
 
 func (s *TestRunnerService) RunTest(ctx context.Context, language enum.Language, code string, memoryLimitInKB, timeLimitInMs int, tests []model.Test) (model.TestsResult, error) {
-	program, err := s.codeRunnerFactory.NewExecutor(code, language)
+	program, err := s.codeRunnerFactory.NewExecutor(code, memoryLimitInKB, timeLimitInMs, language)
 	if err != nil {
 		if errors.Is(err, executor2.CompileError) {
 			res := model.TestsResult{
@@ -42,7 +42,7 @@ func (s *TestRunnerService) RunTest(ctx context.Context, language enum.Language,
 		Points:      0,
 	}
 	for i, test := range tests {
-		output, err := program.Execute(ctx, test.Input, memoryLimitInKB, timeLimitInMs)
+		output, err := program.Execute(ctx, test.Input)
 		if err != nil {
 			if errors.Is(err, executor2.TimeLimitError) {
 				res = model.TestsResult{

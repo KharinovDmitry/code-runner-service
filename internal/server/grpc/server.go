@@ -1,24 +1,24 @@
-package grpc
+package grpcServer
 
 import (
 	"code-runner-service/internal/domain/enum"
 	"code-runner-service/internal/domain/model"
 	"code-runner-service/internal/domain/service"
-	codeRunnerV1 "code-runner-service/proto/gen/go/code-runner"
 	"context"
+	codeRunner "github.com/Reholly/kforge-proto/src/gen/code-runner"
 	"google.golang.org/grpc"
 )
 
 type serverAPI struct {
-	codeRunnerV1.UnimplementedCodeRunnerServer
+	codeRunner.UnimplementedCodeRunnerServer
 	testRunner service.TestRunner
 }
 
 func Register(gRPCServer *grpc.Server, testRunner service.TestRunner) {
-	codeRunnerV1.RegisterCodeRunnerServer(gRPCServer, &serverAPI{testRunner: testRunner})
+	codeRunner.RegisterCodeRunnerServer(gRPCServer, &serverAPI{testRunner: testRunner})
 }
 
-func (s *serverAPI) RunTestsOnCode(ctx context.Context, in *codeRunnerV1.RunTestsOnCodeRequest) (*codeRunnerV1.RunTestsOnCodeResponse, error) {
+func (s *serverAPI) RunTestsOnCode(ctx context.Context, in *codeRunner.RunTestsOnCodeRequest) (*codeRunner.RunTestsOnCodeResponse, error) {
 	testsModel := make([]model.Test, len(in.Tests))
 	for i, testProto := range in.Tests {
 		testsModel[i] = model.Test{
@@ -29,7 +29,7 @@ func (s *serverAPI) RunTestsOnCode(ctx context.Context, in *codeRunnerV1.RunTest
 	}
 
 	res, err := s.testRunner.RunTest(ctx, enum.Language(in.Language), in.Code, int(in.MemoryLimitKb), int(in.TimeLimitMs), testsModel)
-	return &codeRunnerV1.RunTestsOnCodeResponse{
+	return &codeRunner.RunTestsOnCodeResponse{
 		ResultCode:  string(res.ResultCode),
 		Points:      int32(res.Points),
 		Description: res.Description,

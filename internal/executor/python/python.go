@@ -14,14 +14,20 @@ import (
 	"time"
 )
 
+var baseContainerMemoryKb = 5 * 1024
+
 type PythonExecutor struct {
-	code     string
-	fileName string
+	code            string
+	fileName        string
+	memoryLimitInKb int
+	timeLimitInMs   int
 }
 
-func NewPythonExecutor(code string) executor.Executor {
+func NewPythonExecutor(code string, memoryLimitInKb int, timeLimitInMs int) executor.Executor {
 	return &PythonExecutor{
-		code: code,
+		code:            code,
+		memoryLimitInKb: memoryLimitInKb,
+		timeLimitInMs:   timeLimitInMs,
 	}
 }
 
@@ -42,6 +48,7 @@ func (p *PythonExecutor) Init() error {
 		"--mount", "type=bind,source=./tmp,target=/home/jail/tmp",
 		"--rm",
 		"--name", fileName,
+		fmt.Sprintf("--memory=%dk", p.memoryLimitInKb+baseContainerMemoryKb),
 		"-d",
 		"-e", "FILE_NAME="+fileName,
 		"python_executor",
@@ -55,10 +62,10 @@ func (p *PythonExecutor) Init() error {
 	return nil
 }
 
-func (p *PythonExecutor) Execute(ctx context.Context, input string, memoryLimitInKb int, timeLimitInMs int) (output string, err error) {
+func (p *PythonExecutor) Execute(ctx context.Context, input string) (output string, err error) {
 	cmd := exec.Command("docker", "exec",
 		"-i", p.fileName,
-		"./unprivrun", strconv.Itoa(timeLimitInMs), strconv.Itoa(memoryLimitInKb),
+		"./unprivrun", strconv.Itoa(p.timeLimitInMs), strconv.Itoa(p.memoryLimitInKb),
 		"python3", "tmp/"+p.fileName)
 
 	stdin, err := cmd.StdinPipe()
@@ -77,6 +84,10 @@ func (p *PythonExecutor) Execute(ctx context.Context, input string, memoryLimitI
 
 	if outputString == "TIME LIMIT" {
 		return "", executor2.TimeLimitError
+	}
+
+	if outputString == "MEMORY LIMIT" {
+		return "", executor2.MemoryLimitError
 	}
 
 	if strings.Contains(outputString, "RUNTIME ERROR") {

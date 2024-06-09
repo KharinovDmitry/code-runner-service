@@ -14,7 +14,7 @@ var (
 )
 
 type Executor interface {
-	Execute(ctx context.Context, input string, memoryLimitInKb int, timeLimitInMs int) (output string, err error)
+	Execute(ctx context.Context, input string) (output string, err error)
 	Init() error
 	Close() error
 }

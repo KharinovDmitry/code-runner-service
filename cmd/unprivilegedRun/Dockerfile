@@ -4,18 +4,17 @@ WORKDIR /app
 
 COPY ./ ./
 
-RUN go mod init unpiviligedRun
 RUN go mod download
 RUN go build -o ./bin/unprivrun main.go
 
 FROM alpine as runner
 
-COPY --from=builder /app/bin/unprivrun /home/
+COPY --from=builder /app/bin/unprivrun /home/unprivrun
 
 WORKDIR /home
 
 RUN mkdir /home/jail && \
-    cp -a /bin /etc /lib /sbin /usr /home/jail
+    cp -a /bin /etc /lib /sbin /usr /home/unprivrun /home/jail
 
 
 RUN chroot jail adduser -h / -D unprivuser && \

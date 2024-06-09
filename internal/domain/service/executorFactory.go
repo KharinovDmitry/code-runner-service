@@ -6,5 +6,5 @@ import (
 )
 
 type ExecutorFactory interface {
-	NewExecutor(code string, language enum.Language) (executor.Executor, error)
+	NewExecutor(code string, memoryLimitKb int, timeLimitInMs int, language enum.Language) (executor.Executor, error)
 }
