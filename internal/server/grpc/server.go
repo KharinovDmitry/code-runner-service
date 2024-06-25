@@ -12,10 +12,15 @@ import (
 type serverAPI struct {
 	codeRunner.UnimplementedCodeRunnerServer
 	testRunner service.TestRunner
+	logger     service.Logger
 }
 
-func Register(gRPCServer *grpc.Server, testRunner service.TestRunner) {
-	codeRunner.RegisterCodeRunnerServer(gRPCServer, &serverAPI{testRunner: testRunner})
+func Register(gRPCServer *grpc.Server, testRunner service.TestRunner, logger service.Logger) {
+	codeRunner.RegisterCodeRunnerServer(gRPCServer,
+		&serverAPI{
+			testRunner: testRunner,
+			logger:     logger,
+		})
 }
 
 func (s *serverAPI) RunTestsOnCode(ctx context.Context, in *codeRunner.RunTestsOnCodeRequest) (*codeRunner.RunTestsOnCodeResponse, error) {
@@ -29,6 +34,9 @@ func (s *serverAPI) RunTestsOnCode(ctx context.Context, in *codeRunner.RunTestsO
 	}
 
 	res, err := s.testRunner.RunTest(ctx, enum.Language(in.Language), in.Code, int(in.MemoryLimitKb), int(in.TimeLimitMs), testsModel)
+	if err != nil {
+		s.logger.Error(err.Error())
+	}
 	return &codeRunner.RunTestsOnCodeResponse{
 		ResultCode:  string(res.ResultCode),
 		Points:      int32(res.Points),

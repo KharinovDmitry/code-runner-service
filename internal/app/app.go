@@ -17,9 +17,6 @@ func Run(cfg *config.Config) error {
 	if err := services.Init(cfg.Env); err != nil {
 		return err
 	}
-
-	services.Logger.Info("app started")
-
 	recoveryOpts := []recovery.Option{
 		recovery.WithRecoveryHandler(func(p interface{}) (err error) {
 			services.Logger.Error(err.Error())
@@ -31,7 +28,7 @@ func Run(cfg *config.Config) error {
 		recovery.UnaryServerInterceptor(recoveryOpts...),
 	))
 
-	grpcServer.Register(server, services.TestRunner)
+	grpcServer.Register(server, services.TestRunner, services.Logger)
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
 	if err != nil {
@@ -41,5 +38,6 @@ func Run(cfg *config.Config) error {
 		return fmt.Errorf("failed to run gprc server: %w", err)
 	}
 
+	services.Logger.Info("app started")
 	return nil
 }

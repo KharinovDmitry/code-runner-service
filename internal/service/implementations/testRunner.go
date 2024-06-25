@@ -24,6 +24,10 @@ func NewTestRunnerService(codeRunnerFactory service.ExecutorFactory) *TestRunner
 func (s *TestRunnerService) RunTest(ctx context.Context, language enum.Language, code string, memoryLimitInKB, timeLimitInMs int, tests []model.Test) (model.TestsResult, error) {
 	program, err := s.codeRunnerFactory.NewExecutor(code, memoryLimitInKB, timeLimitInMs, language)
 	if err != nil {
+		return model.TestsResult{}, fmt.Errorf("create executor: %w", err)
+	}
+	err = program.Init()
+	if err != nil {
 		if errors.Is(err, executor2.CompileError) {
 			res := model.TestsResult{
 				ResultCode:  enum.CompileErrorCode,
