@@ -1,7 +1,7 @@
 services:
   edu:
-    build: antipathya/code-runner@latest
+    image: antipathya/code-runner@latest
     networks:
       - default
     ports:
-      - "8030:8000"
+      - "8040:8000"
