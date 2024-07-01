@@ -27,7 +27,7 @@ func main() {
 		panic("read config error: " + err.Error())
 	}
 
-	if err := exec.Command("make rebuild_executors").Run(); err != nil {
+	if err := exec.Command("make", "rebuild_executors").Run(); err != nil {
 		panic("make rebuild_executors error: " + err.Error())
 	}
 
