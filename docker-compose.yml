@@ -1,6 +1,6 @@
 services:
   app:
-    image: antipathya/code-runner
+    image: antipathya/code-runner:latest
     networks:
       - default
     ports:

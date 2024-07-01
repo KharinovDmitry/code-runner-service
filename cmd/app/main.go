@@ -27,11 +27,6 @@ func main() {
 		panic("read config error: " + err.Error())
 	}
 
-	err = buildExecutors()
-	if err != nil {
-		panic("build executors error: " + err.Error())
-	}
-
 	err = app.Run(cfg)
 	if err != nil {
 		panic(err.Error())
