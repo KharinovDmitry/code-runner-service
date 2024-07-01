@@ -14,6 +14,7 @@ COPY --from=builder /app/bin/unprivrun /home/unprivrun
 WORKDIR /home
 
 RUN mkdir /home/jail && \
+    mkdir /home/jail/tmp && \
     cp -a /bin /etc /lib /sbin /usr /home/unprivrun /home/jail
 
 

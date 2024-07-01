@@ -33,6 +33,19 @@ func NewPythonExecutor(code string, memoryLimitInKb int, timeLimitInMs int) exec
 
 func (p *PythonExecutor) Init() error {
 	fileName := strconv.FormatInt(time.Now().Unix(), 10) + ".py"
+
+	_, err := os.Stat("tmp")
+	if err != nil {
+		if os.IsNotExist(err) {
+			err = os.Mkdir("tmp", 0777)
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+
 	file, err := os.Create("tmp/" + fileName)
 	if err != nil {
 		return err
@@ -44,8 +57,8 @@ func (p *PythonExecutor) Init() error {
 	}
 
 	p.fileName = fileName
+
 	cmd := exec.Command("docker", "run",
-		"--mount", "type=bind,source=./tmp,target=/home/jail/tmp",
 		"--rm",
 		"--name", fileName,
 		fmt.Sprintf("--memory=%dk", p.memoryLimitInKb+baseContainerMemoryKb),
@@ -53,10 +66,15 @@ func (p *PythonExecutor) Init() error {
 		"-e", "FILE_NAME="+fileName,
 		"python_executor",
 		"sleep", "infinity")
-
 	err = cmd.Run()
 	if err != nil {
-		return err
+		return fmt.Errorf("in PythonExecutor(Init, run): %w", err)
+	}
+
+	cmd = exec.Command("docker", "cp", "tmp/"+fileName, fileName+":./home/jail/tmp/")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("in PythonExecutor(Init, copy): %s", err.Error()+" "+string(out))
 	}
 
 	return nil
