@@ -4,6 +4,7 @@ import (
 	"code-runner-service/config"
 	"code-runner-service/internal/app"
 	"flag"
+	"os/exec"
 )
 
 // @title Contest Service API
@@ -24,6 +25,10 @@ func main() {
 	cfg, err := config.Load(cfgPath)
 	if err != nil {
 		panic("read config error: " + err.Error())
+	}
+
+	if err := exec.Command("make rebuild_executors").Run(); err != nil {
+		panic("make rebuild_executors error: " + err.Error())
 	}
 
 	err = app.Run(cfg)
