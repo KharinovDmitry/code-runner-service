@@ -1,6 +1,6 @@
 services:
   edu:
-    image: antipathya/code-runner@latest
+    image: antipathya/code-runner
     networks:
       - default
     ports:
