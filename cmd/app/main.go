@@ -27,12 +27,23 @@ func main() {
 		panic("read config error: " + err.Error())
 	}
 
-	if err := exec.Command("make", "rebuild_executors").Run(); err != nil {
-		panic("make rebuild_executors error: " + err.Error())
+	err = buildExecutors()
+	if err != nil {
+		panic("build executors error: " + err.Error())
 	}
 
 	err = app.Run(cfg)
 	if err != nil {
 		panic(err.Error())
 	}
+}
+
+func buildExecutors() error {
+	if err := exec.Command("docker", "build", "-t", "unpivileged_run", "unprivilegedRun").Run(); err != nil {
+		return err
+	}
+	if err := exec.Command("docker", "build", "-t", "python_executor", "python").Run(); err != nil {
+		return err
+	}
+	return nil
 }
