@@ -14,4 +14,4 @@ FROM alpine AS runner
 COPY --from=builder /app/bin/code-runner-service /
 COPY --from=builder /app/config/config.yaml config.yaml
 
-ENTRYPOINT ["./article-service -path=config.yaml"]
+ENTRYPOINT ["./code-runner-service", "-path=config.yaml"]
