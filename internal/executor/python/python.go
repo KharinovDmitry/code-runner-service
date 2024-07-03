@@ -66,13 +66,13 @@ func (p *PythonExecutor) Init() error {
 		"-e", "FILE_NAME="+fileName,
 		"python_executor",
 		"sleep", "infinity")
-	err = cmd.Run()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("in PythonExecutor(Init, run): %w", err)
+		return fmt.Errorf("in PythonExecutor(Init, run): %w, %s", err, string(out))
 	}
 
 	cmd = exec.Command("docker", "cp", "tmp/"+fileName, fileName+":./home/jail/tmp/")
-	out, err := cmd.CombinedOutput()
+	out, err = cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("in PythonExecutor(Init, copy): %s", err.Error()+" "+string(out))
 	}
