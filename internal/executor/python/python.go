@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var baseContainerMemoryKb = 5 * 1024
+var baseContainerMemoryKb = 6 * 1024
 
 type PythonExecutor struct {
 	code            string
