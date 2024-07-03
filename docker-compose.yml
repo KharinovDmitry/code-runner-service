@@ -1,7 +1,6 @@
 services:
   app:
     image: antipathya/code-runner:latest
-    privileged: true
     networks:
       - default
     ports:
