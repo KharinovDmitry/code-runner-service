@@ -4,6 +4,7 @@ import (
 	"code-runner-service/internal/domain/enum"
 	"code-runner-service/internal/domain/executor"
 	executor2 "code-runner-service/internal/domain/executor"
+	"code-runner-service/internal/executor/cpp"
 	"code-runner-service/internal/executor/python"
 )
 
@@ -15,6 +16,7 @@ func NewExecutorFactory() *ExecutorFactory {
 	return &ExecutorFactory{
 		languageExecutorMap: map[enum.Language]func(code string, memoryLimitInKb int, timeLimitInMs int) executor.Executor{
 			enum.Python: python.NewPythonExecutor,
+			enum.CPP:    cpp.NewCPPExecutor,
 		},
 	}
 }

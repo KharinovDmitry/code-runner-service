@@ -1,6 +1,7 @@
 rebuild_executors:
 	docker build -t unpivileged_run cmd/unprivilegedRun
 	docker build -t python_executor internal/executor/python
+	docker build -t cpp_executor internal/executor/cpp
 
 up_python_executor:
 	docker run --rm --mount type=bind,source=./internal/executor/python/testFiles,target=/home/tmp --name test.py -d -e FILE_NAME=test.py python_executor sleep infinity

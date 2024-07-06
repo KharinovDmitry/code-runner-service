@@ -31,6 +31,9 @@ func main() {
 	defer closeCtx()
 
 	runCommand := strings.Join(os.Args[3:], " ")
+	fileName := strings.Replace(runCommand, "./", "", 1)
+	_ = exec.Command("chmod", "0777", "jail/"+fileName).Run()
+
 	args := []string{"chroot", "jail", "su", "unprivuser", "-c", runCommand}
 
 	cmd := exec.CommandContext(ctx, args[0], args[1:]...)

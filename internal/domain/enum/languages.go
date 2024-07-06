@@ -7,7 +7,7 @@ package enum
 type Language string
 
 const (
-	CPP        Language = "CPP"
+	CPP        Language = "C++"
 	Python     Language = "Python"
 	CSharp     Language = "C#"
 	JavaScript Language = "JS"
