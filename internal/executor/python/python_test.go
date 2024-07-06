@@ -25,6 +25,21 @@ func TestBase(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestSpace(t *testing.T) {
+	code, err := os.ReadFile("testFiles/testSpace.py")
+	assert.Nil(t, err)
+
+	executor := NewPythonExecutor(byteconv.String(code), 1024, 1000)
+	assert.Nil(t, executor.Init())
+	defer executor.Close()
+
+	actual, err := executor.Execute(context.Background(), "Hello, World!")
+	assert.Nil(t, err)
+
+	expected := "Hello, World!"
+	assert.Equal(t, expected, actual)
+}
+
 func TestShutdown(t *testing.T) {
 	code, err := os.ReadFile("testFiles/shutdownTest.py")
 	assert.Nil(t, err)

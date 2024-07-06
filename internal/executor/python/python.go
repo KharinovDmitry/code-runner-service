@@ -7,11 +7,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var baseContainerMemoryKb = 6 * 1024
@@ -32,9 +32,13 @@ func NewPythonExecutor(code string, memoryLimitInKb int, timeLimitInMs int) exec
 }
 
 func (p *PythonExecutor) Init() error {
-	fileName := strconv.FormatInt(time.Now().Unix(), 10) + ".py"
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return err
+	}
+	fileName := id.String() + ".py"
 
-	_, err := os.Stat("tmp")
+	_, err = os.Stat("tmp")
 	if err != nil {
 		if os.IsNotExist(err) {
 			err = os.Mkdir("tmp", 0777)
