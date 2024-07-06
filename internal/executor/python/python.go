@@ -36,7 +36,7 @@ func (p *PythonExecutor) Init() error {
 	if err != nil {
 		return err
 	}
-	fileName := id.String() + ".py"
+	p.fileName = id.String() + ".py"
 
 	_, err = os.Stat("tmp")
 	if err != nil {
@@ -50,7 +50,7 @@ func (p *PythonExecutor) Init() error {
 		}
 	}
 
-	file, err := os.Create("tmp/" + fileName)
+	file, err := os.Create("tmp/" + p.fileName)
 	if err != nil {
 		return err
 	}
@@ -60,14 +60,12 @@ func (p *PythonExecutor) Init() error {
 		return err
 	}
 
-	p.fileName = fileName
-
 	cmd := exec.Command("docker", "run",
 		"--rm",
-		"--name", fileName,
+		"--name", p.fileName,
 		fmt.Sprintf("--memory=%dk", p.memoryLimitInKb+baseContainerMemoryKb),
 		"-d",
-		"-e", "FILE_NAME="+fileName,
+		"-e", "FILE_NAME="+p.fileName,
 		"python_executor",
 		"sleep", "infinity")
 	out, err := cmd.CombinedOutput()
@@ -75,7 +73,7 @@ func (p *PythonExecutor) Init() error {
 		return fmt.Errorf("in PythonExecutor(Init, run): %w, %s", err, string(out))
 	}
 
-	cmd = exec.Command("docker", "cp", "tmp/"+fileName, fileName+":./home/jail/tmp/")
+	cmd = exec.Command("docker", "cp", "tmp/"+p.fileName, p.fileName+":./home/jail/tmp/")
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("in PythonExecutor(Init, copy): %s", err.Error()+" "+string(out))

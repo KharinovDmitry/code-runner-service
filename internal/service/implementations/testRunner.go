@@ -56,6 +56,14 @@ func (s *TestRunnerService) RunTest(ctx context.Context, language enum.Language,
 				}
 				break
 			}
+			if errors.Is(err, executor2.MemoryLimitError) {
+				res = model.TestsResult{
+					ResultCode:  enum.MemoryLimitCode,
+					Description: fmt.Sprintf("Test failed: %d. Memory limit error", i),
+					Points:      res.Points,
+				}
+				break
+			}
 			if errors.Is(err, executor2.RuntimeError) {
 				res = model.TestsResult{
 					ResultCode:  enum.RuntimeErrorCode,
