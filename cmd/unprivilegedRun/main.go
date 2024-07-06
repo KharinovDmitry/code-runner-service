@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -43,10 +44,14 @@ func main() {
 	}
 	defer stdin.Close()
 
-	var input string
-	fmt.Fscan(os.Stdin, &input)
-
-	fmt.Fprintln(stdin, input)
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		input := scanner.Text()
+		fmt.Fprintln(stdin, input)
+	} else if err := scanner.Err(); err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 
 	outputBytes, err := cmd.CombinedOutput()
 	outputString := string(outputBytes)
