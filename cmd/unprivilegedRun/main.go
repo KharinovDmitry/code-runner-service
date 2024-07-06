@@ -45,6 +45,7 @@ func main() {
 
 	var input string
 	fmt.Fscan(os.Stdin, &input)
+
 	fmt.Fprintln(stdin, input)
 
 	outputBytes, err := cmd.CombinedOutput()

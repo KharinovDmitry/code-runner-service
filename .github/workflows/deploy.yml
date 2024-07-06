@@ -56,7 +56,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/admin/kforge/code-runner
+            cd /home/admin/kforge
             docker compose stop
             docker compose pull 
             docker compose up -d
